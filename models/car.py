@@ -27,7 +27,6 @@ class Car:
         self.map = map_game
         self.is_alive = True
         self.distance = 0
-        self.time_spent = 0
 
     def get_point(self):
         return [self.pos.x, self.pos.y]
@@ -37,9 +36,6 @@ class Car:
 
     def get_distance(self):
         return self.distance / 100
-
-    def get_time_spent(self):
-        return self.time_spent
 
     def get_alive(self):
         return self.is_alive
@@ -75,7 +71,6 @@ class Car:
     def update(self):
         # Update distance and time the car has gone through
         self.distance += self.speed
-        self.time_spent += 1
 
         # Collect and update car position
         self.rotate_surface = rot_center(self.surface, self.angle)
