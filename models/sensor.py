@@ -5,9 +5,9 @@ BLUE, RED = (0, 102, 204), (255, 0, 0)
 
 
 class Sensor:
-    def __init__(self, p: Point):
+    def __init__(self, p: Point, color: Tuple = BLUE):
         self.point: Point = p
-        self.color: Tuple = BLUE
+        self.color: Tuple = color
         self.crash: bool = False
         self.cell: Tuple = (int(p.x), int(p.y))
 

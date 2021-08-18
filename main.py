@@ -20,10 +20,10 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 exit(0)
 
-        car.update(map)
+        # car.update(map)
         screen.blit(map, (0, 0))
         screen.blit(car.rotate_surface, car.get_point(car.pos))
         car.draw()
         car.draw_sensors()
         pygame.display.flip()  # update the whole screen
-        clock.tick(2)
+        clock.tick(5)

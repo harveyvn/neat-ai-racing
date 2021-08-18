@@ -23,7 +23,7 @@ def rot_center(image, angle):
 class Car:
     def __init__(self, screen):
         self.pos = Point(600, 650)
-        self.center = Point(0, 0)
+        self.center = Point(645, 695)
         self.sensors: List[Sensor] = []
         self.surface = pygame.image.load("assets/car.png")
         self.rotate_surface = self.surface
@@ -41,6 +41,7 @@ class Car:
 
     def draw(self):
         pygame.draw.circle(self.screen, RED, [self.center.x, self.center.y], 5)
+        self.sensors = self.generate_sensors()
 
     @staticmethod
     def calculate_next_point(p: Point, angle: float, distance: float) -> Point:
@@ -57,15 +58,16 @@ class Car:
 
     def generate_sensors(self) -> List[Sensor]:
         p = self.center
-        top_left = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(360 - (self.angle + 30))),
-                                p.y + CAR_BBOX * math.sin(math.radians(360 - (self.angle + 30)))))
-        top_right = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(360 - (self.angle + 150))),
-                                 p.y + CAR_BBOX * math.sin(math.radians(360 - (self.angle + 150)))))
-        bottom_left = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(360 - (self.angle + 210))),
-                                   p.y + CAR_BBOX * math.sin(math.radians(360 - (self.angle + 210)))))
-        bottom_right = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(360 - (self.angle + 330))),
-                                    p.y + CAR_BBOX * math.sin(math.radians(360 - (self.angle + 330)))))
-        return [top_right, top_left, bottom_right, bottom_left]
+        # Follow clockwise
+        top_right = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 30)),
+                                 p.y + CAR_BBOX * math.sin(math.radians(self.angle + 30))))
+        bottom_right = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 150)),
+                                    p.y + CAR_BBOX * math.sin(math.radians(self.angle + 150))))
+        bottom_left = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 210)),
+                                   p.y + CAR_BBOX * math.sin(math.radians(self.angle + 210))))
+        top_left = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 330)),
+                                p.y + CAR_BBOX * math.sin(math.radians(self.angle + 330))))
+        return [top_right, bottom_right, bottom_left, top_left]
 
     def update(self, map):
         self.rotate_surface = rot_center(self.surface, self.angle)
