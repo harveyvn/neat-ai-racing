@@ -12,9 +12,9 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 70)
     font = pygame.font.SysFont("Arial", 30)
-    map = pygame.image.load("assets/map_00.png")
+    map_game = pygame.image.load("assets/map_00.png")
 
-    car = Car(map, "assets/car.png")
+    car = Car(map_game, "assets/car.png")
     viz = Visualization(car, screen)
 
     while True:
@@ -23,7 +23,7 @@ if __name__ == "__main__":
                 exit(0)
 
         car.update()
-        screen.blit(map, (0, 0))
+        screen.blit(map_game, (0, 0))
         screen.blit(car.get_surface(), car.get_point())
         viz.draw()
         viz.draw_sensors()
