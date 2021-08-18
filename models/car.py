@@ -10,7 +10,7 @@ screen_width = 1500
 screen_height = 800
 BLUE, RED, ORANGE = (0, 102, 204), (255, 0, 0), (255, 128, 0)
 OUT_OF_STREET = (255, 255, 255, 255)
-CAR_BBOX = 90 / 2
+CAR_BBOX = 80 / 2
 SCREEN_WIDTH, SCREEN_HEIGHT = 1500, 800
 
 
@@ -36,13 +36,19 @@ class Car:
         return self.rotate_surface
 
     def get_distance(self):
-        return self.distance
+        return self.distance / 100
 
     def get_time_spent(self):
         return self.time_spent
 
     def get_alive(self):
         return self.is_alive
+
+    def get_data(self):
+        ret = [0, 0, 0, 0, 0]
+        for i, r in enumerate(self.radars):
+            ret[i] = int(r.length) / 100
+        return ret
 
     def generate_sensors(self) -> List[Sensor]:
         p = self.center
@@ -56,7 +62,7 @@ class Car:
     def generate_radars(self) -> List[Radar]:
         radars: List[Radar] = []
         p = self.center
-        for d in [90, 0, 270]:  # [left front right]
+        for d in [90, 45, 0, 315, 270]:  # [left front right]
             radar = Radar(origin=p)
             while self.map.get_at(radar.cell) != OUT_OF_STREET and radar.length < radar.max_len:
                 deg = 360 - (self.angle + d)
@@ -84,5 +90,3 @@ class Car:
                 s.set_color(False)
                 self.angle += 10
                 self.is_alive = False
-
-        print("=================")
