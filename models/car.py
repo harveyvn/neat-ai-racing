@@ -59,15 +59,11 @@ class Car:
     def generate_sensors(self) -> List[Sensor]:
         p = self.center
         # Follow clockwise
-        top_right = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 30)),
-                                 p.y + CAR_BBOX * math.sin(math.radians(self.angle + 30))))
-        bottom_right = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 150)),
-                                    p.y + CAR_BBOX * math.sin(math.radians(self.angle + 150))))
-        bottom_left = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 210)),
-                                   p.y + CAR_BBOX * math.sin(math.radians(self.angle + 210))))
-        top_left = Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + 330)),
-                                p.y + CAR_BBOX * math.sin(math.radians(self.angle + 330))))
-        return [top_right, bottom_right, bottom_left, top_left]
+        sensors: List[Sensor] = []
+        for deg in [30, 150, 210, 330]:  # [top_right, bottom_right, bottom_left, top_left]
+            sensors.append(Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + deg)),
+                                        p.y + CAR_BBOX * math.sin(math.radians(self.angle + deg)))))
+        return sensors
 
     def update(self, map):
         self.rotate_surface = rot_center(self.surface, self.angle)
