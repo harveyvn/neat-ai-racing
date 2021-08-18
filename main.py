@@ -26,4 +26,4 @@ if __name__ == "__main__":
         car.draw()
         car.draw_sensors()
         pygame.display.flip()  # update the whole screen
-        clock.tick(5)
+        clock.tick(2)
