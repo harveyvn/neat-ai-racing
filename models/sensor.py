@@ -12,10 +12,8 @@ class Sensor:
         self.crash: bool = False
         self.cell: Tuple = (int(point.x), int(point.y))
 
-    def set_crash(self, is_crash: bool):
-        if is_crash:
-            self.crash = True
-            self.color = RED
-        else:
-            self.crash = False
+    def set_color(self, is_alive: bool = True):
+        if is_alive:
             self.color = self.old_color
+        else:
+            self.color = RED

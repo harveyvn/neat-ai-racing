@@ -26,7 +26,5 @@ if __name__ == "__main__":
         screen.blit(map_game, (0, 0))
         screen.blit(car.get_surface(), car.get_point())
         viz.draw()
-        viz.draw_sensors()
-        viz.draw_radars()
         pygame.display.flip()  # update the whole screen
         clock.tick(10)

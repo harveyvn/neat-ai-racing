@@ -25,12 +25,24 @@ class Car:
         self.angle = 0
         self.speed = 15
         self.map = map_game
+        self.is_alive = True
+        self.distance = 0
+        self.time_spent = 0
 
     def get_point(self):
         return [self.pos.x, self.pos.y]
 
     def get_surface(self):
         return self.rotate_surface
+
+    def get_distance(self):
+        return self.distance
+
+    def get_time_spent(self):
+        return self.time_spent
+
+    def get_alive(self):
+        return self.is_alive
 
     def generate_sensors(self) -> List[Sensor]:
         p = self.center
@@ -55,17 +67,22 @@ class Car:
         return radars
 
     def update(self):
+        # Update distance and time the car has gone through
+        self.distance += self.speed
+        self.time_spent += 1
+
+        # Collect and update car position
         self.rotate_surface = rot_center(self.surface, self.angle)
-        # check position and update the car position
         self.pos = calculate_next_point(self.pos, self.angle, self.speed, 20, 20, SCREEN_WIDTH, SCREEN_HEIGHT)
         self.center = Point(self.pos.x + 45, self.pos.y + 45)
         self.sensors = self.generate_sensors()
         self.radars = self.generate_radars()
 
+        # Check if the car has collision
         for s in self.sensors:
             if self.map.get_at(s.cell) == OUT_OF_STREET:
-                s.set_crash(True)
-                self.angle += 5
-            else:
-                s.set_crash(False)
+                s.set_color(False)
+                self.angle += 10
+                self.is_alive = False
+
         print("=================")

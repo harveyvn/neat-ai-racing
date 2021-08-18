@@ -21,5 +21,5 @@ class Visualization:
 
     def draw(self):
         pygame.draw.circle(self.screen, RED, p2l(self.car.center), 5)
-        self.car.sensors = self.car.generate_sensors()
-        self.car.radars = self.car.generate_radars()
+        self.draw_sensors()
+        self.draw_radars()
