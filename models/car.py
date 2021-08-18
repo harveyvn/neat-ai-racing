@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from .sensor import Sensor
 
 import pygame
@@ -58,11 +58,11 @@ class Car:
 
     def generate_sensors(self) -> List[Sensor]:
         p = self.center
-        # Follow clockwise
-        sensors: List[Sensor] = []
-        for deg in [30, 150, 210, 330]:  # [top_right, bottom_right, bottom_left, top_left]
-            sensors.append(Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(self.angle + deg)),
-                                        p.y + CAR_BBOX * math.sin(math.radians(self.angle + deg)))))
+        sensors: List[Sensor] = []  # Follow clockwise
+        for d in [30, 150, 210, 330]:  # [right_top, left_top, left_bottom, right_bottom]
+            deg = 360 - (self.angle + d)
+            sensors.append(Sensor(Point(p.x + CAR_BBOX * math.cos(math.radians(deg)),
+                                        p.y + CAR_BBOX * math.sin(math.radians(deg)))))
         return sensors
 
     def update(self, map):
@@ -75,7 +75,7 @@ class Car:
         for s in self.sensors:
             if map.get_at(s.cell) == (255, 255, 255, 255):
                 s.set_crash(True)
-                self.angle += 10
+                self.angle += 5
             else:
                 s.set_crash(False)
         print("=================")
