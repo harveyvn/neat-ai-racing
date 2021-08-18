@@ -1,60 +1,36 @@
-from typing import List, Tuple
-from .sensor import Sensor
-
 import pygame
 import math
 from shapely.geometry import Point
+from typing import List
+from .sensor import Sensor
+from .radar import Radar
+from .libs import calculate_next_point, rot_center
 
 screen_width = 1500
 screen_height = 800
-BLUE, RED = (0, 102, 204), (255, 0, 0)
+BLUE, RED, ORANGE = (0, 102, 204), (255, 0, 0), (255, 128, 0)
+OUT_OF_STREET = (255, 255, 255, 255)
 CAR_BBOX = 90 / 2
-
-
-def rot_center(image, angle):
-    orig_rect = image.get_rect()
-    rot_image = pygame.transform.rotate(image, angle)
-    rot_rect = orig_rect.copy()
-    rot_rect.center = rot_image.get_rect().center
-    rot_image = rot_image.subsurface(rot_rect).copy()
-    return rot_image
+SCREEN_WIDTH, SCREEN_HEIGHT = 1500, 800
 
 
 class Car:
-    def __init__(self, screen):
+    def __init__(self, map_game, asset):
         self.pos = Point(600, 650)
         self.center = Point(645, 695)
         self.sensors: List[Sensor] = []
-        self.surface = pygame.image.load("assets/car.png")
+        self.radars: List[Radar] = []
+        self.surface = pygame.image.load(asset)
         self.rotate_surface = self.surface
         self.angle = 0
         self.speed = 15
-        self.screen = screen
+        self.map = map_game
 
-    @staticmethod
-    def get_point(p: Point):
-        return [p.x, p.y]
+    def get_point(self):
+        return [self.pos.x, self.pos.y]
 
-    def draw_sensors(self):
-        for s in self.sensors:
-            pygame.draw.circle(self.screen, s.color, [s.point.x, s.point.y], 5)
-
-    def draw(self):
-        pygame.draw.circle(self.screen, RED, [self.center.x, self.center.y], 5)
-        self.sensors = self.generate_sensors()
-
-    @staticmethod
-    def calculate_next_point(p: Point, angle: float, distance: float) -> Point:
-        # Calculate point, given point(x y), angle, and distance
-        # e.g. x=5*cos(ɑ) y=5*sin(ɑ)
-        x = p.x + distance * math.cos(math.radians(360 - angle))
-        y = p.y + distance * math.sin(math.radians(360 - angle))
-        # Check boundary
-        x = 20 if x < 20 else x
-        x = screen_width - 260 if x > screen_width - 260 else x
-        y = 20 if y < 20 else y
-        y = screen_height - 120 if y > screen_height - 120 else y
-        return Point(x, y)
+    def get_surface(self):
+        return self.rotate_surface
 
     def generate_sensors(self) -> List[Sensor]:
         p = self.center
@@ -65,15 +41,29 @@ class Car:
                                         p.y + CAR_BBOX * math.sin(math.radians(deg)))))
         return sensors
 
-    def update(self, map):
+    def generate_radars(self) -> List[Radar]:
+        radars: List[Radar] = []
+        p = self.center
+        for d in [90, 0, 270]:  # [left front right]
+            radar = Radar(origin=p)
+            while self.map.get_at(radar.cell) != OUT_OF_STREET and radar.length < radar.max_len:
+                deg = 360 - (self.angle + d)
+                x = p.x + radar.length * math.cos(math.radians(deg))
+                y = p.y + radar.length * math.sin(math.radians(deg))
+                radar.update(Point(x, y))
+            radars.append(radar)
+        return radars
+
+    def update(self):
         self.rotate_surface = rot_center(self.surface, self.angle)
         # check position and update the car position
-        self.pos = self.calculate_next_point(self.pos, self.angle, self.speed)
+        self.pos = calculate_next_point(self.pos, self.angle, self.speed, 20, 20, SCREEN_WIDTH, SCREEN_HEIGHT)
         self.center = Point(self.pos.x + 45, self.pos.y + 45)
         self.sensors = self.generate_sensors()
+        self.radars = self.generate_radars()
 
         for s in self.sensors:
-            if map.get_at(s.cell) == (255, 255, 255, 255):
+            if self.map.get_at(s.cell) == OUT_OF_STREET:
                 s.set_crash(True)
                 self.angle += 5
             else:

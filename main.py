@@ -1,6 +1,6 @@
 import pygame
 import neat
-from models import Car
+from models import Car, Visualization
 
 screen_width = 1500
 screen_height = 800
@@ -13,16 +13,20 @@ if __name__ == "__main__":
     generation_font = pygame.font.SysFont("Arial", 70)
     font = pygame.font.SysFont("Arial", 30)
     map = pygame.image.load("assets/map_00.png")
-    car = Car(screen)
+
+    car = Car(map, "assets/car.png")
+    viz = Visualization(car, screen)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit(0)
 
-        car.update(map)
+        car.update()
         screen.blit(map, (0, 0))
-        screen.blit(car.rotate_surface, car.get_point(car.pos))
-        car.draw_sensors()
+        screen.blit(car.get_surface(), car.get_point())
+        viz.draw()
+        viz.draw_sensors()
+        viz.draw_radars()
         pygame.display.flip()  # update the whole screen
         clock.tick(10)
