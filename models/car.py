@@ -83,5 +83,6 @@ class Car:
         for s in self.sensors:
             if self.map.get_at(s.cell) == OUT_OF_STREET:
                 s.set_color(False)
-                self.angle += 10
                 self.is_alive = False
+                # For testing only
+                # self.angle += 10
